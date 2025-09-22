@@ -21,31 +21,30 @@
 #' @return An R data.frame with variables as columns and observations as rows.
 #' @export
 #'
-#' @examples data1 <- gr_read('filename')
-#' @examples data1 <- gr_read('filename.sav')
-#' @examples data1 <- gr_read('filename', datapath='path/to/file/')
-#' @examples data1 <- gr_read('filename', summary=TRUE)
+#' @examplesIf file.exists('filename.sav')
+#' data <- genr_read('filename')
+#' data <- genr_read('filename.sav', summary = TRUE) 
 #'
-gr_read <- function(file, datapath=NULL, summary=FALSE) {
+genr_read <- function(file, datapath=NULL, summary=FALSE) {
 
   # Check input: file extension
   if (!grepl('.sav', file)) { file <- paste0(file,'.sav') }
 
   # Check input: data path
-  if (!base::file.exists(file)) {
+  if (!file.exists(file)) {
 
-    if (base::is.null(datapath) &
-        !base::exists('datapath', where=base::globalenv(), mode='character', inherits=FALSE)) {
+    if (is.null(datapath) &
+        !exists('datapath', where=globalenv(), mode='character', inherits=FALSE)) {
 
-      filepath <- base::file.choose()
+      filepath <- file.choose()
 
-      datapath <- base::dirname(filepath)
-      file <- base::basename(filepath)
+      datapath <- dirname(filepath)
+      file <- basename(filepath)
 
       save_path <- readline('Use location for later? For example, most files you need are stored in this folder [y/n]')
       if (grepl('y', save_path)) { assign('datapath', datapath, envir = .GlobalEnv) }
 
-    } else if (base::is.null(datapath)) {
+    } else if (is.null(datapath)) {
 
       datapath <- get('datapath', envir = .GlobalEnv) # get `datapath` from global enviroment
 
@@ -59,24 +58,24 @@ gr_read <- function(file, datapath=NULL, summary=FALSE) {
     }
 
   } else { # user provided valid path as file
-    datapath <- base::dirname(file)
-    file <- base::basename(file)
+    datapath <- dirname(file)
+    file <- basename(file)
   }
 
   # Load the file
   message('Loading...')
-  d <- base::suppressWarnings(foreign::read.spss(file.path(datapath, file),
+  d <- suppressWarnings(foreign::read.spss(file.path(datapath, file),
                                            use.value.labels = TRUE,
                                            to.data.frame = TRUE))
-  cat('Done! ', base::nrow(d),' observations of ', base::ncol(d), ' variables.\n')
+  cat('Done! ', nrow(d),' observations of ', base::ncol(d), ' variables.\n')
 
   # Make sure missing values are read in correctly
   for (col in d) {
-    if (max(as.numeric(col), na.rm=TRUE) == 999) { d[!is.na(col) & col == 999,] <- NA }
-    if (max(as.numeric(col), na.rm=TRUE) == 888) { d[!is.na(col) & col == 888,] <- NA }
+    if (max(as.numeric(col), na.rm = TRUE) == 999) { d[!is.na(col) & col == 999,] <- NA }
+    if (max(as.numeric(col), na.rm = TRUE) == 888) { d[!is.na(col) & col == 888,] <- NA }
   }
 
-  if (summary==T) { print(summary(d)) }
+  if (summary) { print(summary(d)) }
 
   return(d)
 }
