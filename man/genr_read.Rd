@@ -30,7 +30,7 @@ preserves value labels and substitutes 999 and 888 values with NA where
 appropriate.
 }
 \examples{
-\dontshow{if (file.exists('filename.sav')) withAutoprint(\{ # examplesIf}
+\dontshow{if (file.exists('filename.sav')) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 data <- genr_read('filename')
 data <- genr_read('filename.sav', summary = TRUE) 
 \dontshow{\}) # examplesIf}

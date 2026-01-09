@@ -42,7 +42,7 @@ Regression pooling uses \code{mice::pool()}, and decomposition pooling
 follows Rubin’s rules with small-sample corrections for degrees of freedom.
 }
 \examples{
-\dontshow{if (exists("imp_list")) withAutoprint(\{ # examplesIf}
+\dontshow{if (exists("imp_list")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 fit_all <- run_cma_mi(imp_list, "X", "Y", "M")
 pooled <- pool_cma_mi(fit_all, model_name = "CMA Example")
 pooled$decomp

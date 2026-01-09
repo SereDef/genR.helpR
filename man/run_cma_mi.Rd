@@ -75,7 +75,7 @@ The outputs are combined into a custom S4 object (\code{mira.CMA}) with slots fo
 and an additional slot \code{n} storing the sample size.
 }
 \examples{
-\dontshow{if (exists("imp_list")) withAutoprint(\{ # examplesIf}
+\dontshow{if (exists("imp_list")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 fits <- run_cma_mi(
   datalist = imp_list,
   exposure = "X",
