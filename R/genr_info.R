@@ -4,11 +4,30 @@
 #' types (e.g., factor, numeric...).
 #'
 #' @param df A dataframe (optionally labelled)
+#' @param column_subset A character vector with column names or a regular
+#'  expression to match columns in the dataset.
 #'
 #' @export
 #'
-data_overview <- function(df) {
+data_overview <- function(df, column_subset = NULL) {
   stopifnot(is.data.frame(df))
+
+  # --- subset column if required  --------------------------------------------
+
+  if (!is.null(column_subset)) {
+
+    if (is.character(column_subset) && length(column_subset) == 1L) {
+      # treat as regex pattern on colnames
+      cols_to_keep <- grep(column_subset, names(df), value = TRUE)
+    } else {
+      # treat as explicit columns (names or positions)
+      cols_to_keep <- intersect(column_subset, names(df))
+    }
+
+    if (length(cols_to_keep) < 1) stop('None or the specified columns were found in data.')
+
+    df <- df[, cols_to_keep, drop = FALSE]
+  }
 
   # --- extract info ----------------------------------------------------------
   col_names   <- names(df)
