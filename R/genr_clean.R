@@ -55,30 +55,45 @@ factorize <- function(df, min_levels = 10) {
   return(df)
 }
 
-#' Transform all "SPSS labelled" to factors
+#' Transform all "SPSS labelled" to r base types
 #'
 #' Takes a dataframe and transforms all variables with class `haven_labelled`
-#' to factors. Preserved variable labels if there are any.
+#' to factors, numeric or character vectors. Preserved variable labels if there are any.
 #'
 #' @param df A dataframe (optionally labelled)
-#' @param min_levels Minimum number of unique values, above which the variable
-#'   is not treated as a factor. Default = 10.
+#' @param use_labels_as_levels For factors.
 #'
 #' @export
 #'
-spss_labelled_to_factor <- function(df) {
+clean_spss_bs <- function(df, use_labels_as_levels = TRUE) {
   stopifnot(is.data.frame(df))
 
-  # Preserve variable labels
   labs <- lapply(df, attr, "label")
 
-  df[] <- lapply(seq_along(df), function(col_i) {
-    col <- df[[col_i]]
-    new_col <- if (haven::is.labelled(col)) forcats::as_factor(col) else col
-    attr(new_col, "label") <- labs[[col_i]]
-    return(new_col)
+  df[] <- lapply(seq_along(df), function(i) {
+    x   <- df[[i]]
+    lab <- labs[[i]]
+
+    if (!haven::is.labelled(x)) {
+      attr(x, "label") <- lab
+      return(x)
+    }
+
+    # Decide between factor vs numeric/character
+    val_labs <- labelled::val_labels(x, prefixed = FALSE)
+    has_labels <- length(val_labs) > 0
+
+    if (has_labels && use_labels_as_levels) {
+      # Categorical: use labels as factor levels
+      x_new <- forcats::as_factor(x) 
+    } else {
+      # No (or unwanted) labels: drop them, keep storage mode
+      x_new <- labelled::unlabelled(x)
+    }
+
+    attr(x_new, "label") <- lab
+    return(x_new)
   })
 
   return(df)
 }
-

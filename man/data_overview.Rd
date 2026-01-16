@@ -4,10 +4,13 @@
 \alias{data_overview}
 \title{Print an overview of the dataset}
 \usage{
-data_overview(df)
+data_overview(df, column_subset = NULL)
 }
 \arguments{
 \item{df}{A dataframe (optionally labelled)}
+
+\item{column_subset}{A character vector with column names or a regular
+expression to match columns in the dataset.}
 }
 \description{
 Prints a table to console with info about all the column names, labels and
